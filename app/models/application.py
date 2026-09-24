@@ -15,7 +15,7 @@ class Application(Base):
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
     applied_at = Column(DateTime, nullable=True)
     notes = Column(String, nullable=True)
-    user_id = Column(Integer, ForeignKey="users.id", nullable=False)
+    user_id = Column(Integer, ForeignKey="users.id", unique=True, nullable=False)
 
     user = relationship("User", back_populates="applications")
     
