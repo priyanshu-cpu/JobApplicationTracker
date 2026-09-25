@@ -46,5 +46,3 @@ def verify_token(token: str = Depends(oauth2_scheme)):
     
     except JWTError:
         raise credentials_exception
-
-
