@@ -8,7 +8,7 @@ from app.models.user import User
 
 def get_current_user(payload: dict = Depends(verify_token), db:Session = Depends(get_db)):
     try:
-        user_id = payload["sub"]
+        user_id = int(payload["sub"])
     except (TypeError, ValueError, KeyError):
         raise credentials_exception
     user = db.get(User, user_id)
