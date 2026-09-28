@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 
 
@@ -23,3 +23,9 @@ class ApplicationOut(BaseModel):
     created_at: datetime
     applied_at: datetime
     notes: str | None = Field(default=None)
+
+    model_config = ConfigDict(from_attributes=True)
+
+class ApplicatoinCreateResponse(BaseModel):
+    message: str
+    data : ApplicationOut
