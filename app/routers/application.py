@@ -28,5 +28,17 @@ def create_application(form_data: ApplicationBase, db:Session = Depends(get_db),
 @router.get("/get", response_model=list[ApplicationOut])
 def get_applications(db:Session =Depends(get_db), user: User = Depends(get_current_user)):
     applications = db.query(Application).filter(Application.user_id == user.id).all()
-
+    if not applications:
+        raise HTTPException(status_code=404, detail="not found")
     return applications
+
+
+
+@router.get("/get/{application_id}", response_model=ApplicationOut)
+def get_application( application_id: int, db:Session =Depends(get_db), user: User = Depends(get_current_user)):
+    application = db.query(Application).filter(Application.user_id == user.id, Application.id == application_id).first()
+    if not application:
+        raise HTTPException(status_code=404, detail="not found")
+
+    return application
+
