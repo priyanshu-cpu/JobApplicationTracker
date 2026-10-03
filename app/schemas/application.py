@@ -2,14 +2,14 @@ from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 
 
-class Application(BaseModel):
+class ApplicationBase(BaseModel):
     company: str
     status: str
     job_title: str
     location: str
-    salary: str
+    salary: int
     applied_at: datetime | None = Field(default=datetime.now())
-    notes: str | None = Field(default=None)
+    notes: str | None = None
 
 
 class ApplicationOut(BaseModel):
@@ -19,10 +19,10 @@ class ApplicationOut(BaseModel):
     status: str
     job_title: str
     location: str
-    salary: str
+    salary: int
     created_at: datetime
-    applied_at: datetime
-    notes: str | None = Field(default=None)
+    applied_at: datetime | None = None
+    notes: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
