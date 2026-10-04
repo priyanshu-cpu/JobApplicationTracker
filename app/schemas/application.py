@@ -47,8 +47,6 @@ class ApplicationCreateResponse(BaseModel):
 
 class ApplicationUpdate(BaseModel):
     status: ApplicationStatus = ApplicationStatus.APPLIED
-    updated_at: datetime | None = None
-
 
 
 class ApplicationOutUpdated(BaseModel):

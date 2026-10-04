@@ -39,8 +39,7 @@ def get_applications(
     db: Session = Depends(get_db), user: User = Depends(get_current_user)
 ):
     applications = db.query(Application).filter(Application.user_id == user.id).all()
-    if not applications:
-        raise HTTPException(status_code=201, detail="not found")
+
     return applications
 
 
@@ -79,8 +78,7 @@ def update_application(
         raise HTTPException(status_code=404, detail="not found")
 
     application.status = form_data.status
-    application.updated_at = form_data.updated_at
-    application.notes = form_data.notes
+
 
     db.commit()
     db.refresh(application)
@@ -93,8 +91,8 @@ def update_application(
 
 
 @router.delete("/delete/{application_id}", status_code=201)
-def delete_applicaiton(applicaiton_id: int, db:Session =Depends(get_db), user: User = Depends(get_current_user)):
-    application = db.query(Application).filter(Application.id == applicaiton_id, Application.user_id == user.id).first()
+def delete_applicaiton(application_id: int, db:Session =Depends(get_db), user: User = Depends(get_current_user)):
+    application = db.query(Application).filter(Application.id == application_id, Application.user_id == user.id).first()
 
     if not application:
         raise HTTPException(status_code=404, detail="not found")
