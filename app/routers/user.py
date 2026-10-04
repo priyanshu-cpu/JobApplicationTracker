@@ -64,3 +64,13 @@ def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = D
 @router.get("/me", response_model=UserOut)
 def me(user:User = Depends(get_current_user)):
     return user
+
+
+@router.delete("/me", status_code=204)
+def delete_me(
+    user: UserModel = Depends(get_current_user),
+    db: Session = Depends(get_db),):
+    
+    db.delete(user)
+    db.commit()
+    return

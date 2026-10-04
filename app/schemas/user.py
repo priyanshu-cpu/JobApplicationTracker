@@ -13,7 +13,7 @@ FormattedDT = Annotated[
 class User(BaseModel):
     username: str
     email: EmailStr | None = Field(default=None)
-    password: str
+    password: str = Field(min_length=6)
 
 
 class UserOut(BaseModel):

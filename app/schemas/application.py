@@ -17,7 +17,7 @@ class ApplicationBase(BaseModel):
     status: ApplicationStatus = ApplicationStatus.APPLIED
     job_title: str
     location: str
-    salary: int
+    salary: int = Field(gt=0)
     applied_at: datetime | None = Field(default_factory=lambda: datetime.now(UTC))
     notes: str | None = None
     
@@ -30,7 +30,7 @@ class ApplicationOut(BaseModel):
     status: ApplicationStatus = ApplicationStatus.APPLIED
     job_title: str
     location: str
-    salary: int
+    salary: int 
     created_at: FormattedDT
     applied_at: FormattedDT | None = None
     notes: str | None = None
