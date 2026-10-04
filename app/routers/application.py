@@ -9,13 +9,12 @@ from app.schemas.application import (
     ApplicationBase,
     ApplicationOutUpdated,
     ApplicationUpdateResponse,
-    ApplicationUpdate
+    ApplicationUpdate,
+    ApplicationPatch,
 )
 from sqlalchemy.orm import Session
 
-
 router = APIRouter(prefix="/application")
-
 
 
 @router.post("/create", response_model=ApplicationCreateResponse, status_code=201)
@@ -33,7 +32,6 @@ def create_application(
     return {"message": "application created", "data": new_application}
 
 
-
 @router.get("/get", response_model=list[ApplicationOut])
 def get_applications(
     db: Session = Depends(get_db), user: User = Depends(get_current_user)
@@ -41,7 +39,6 @@ def get_applications(
     applications = db.query(Application).filter(Application.user_id == user.id).all()
 
     return applications
-
 
 
 @router.get("/get/{application_id}", response_model=ApplicationOut)
@@ -61,7 +58,6 @@ def get_application(
     return application
 
 
-
 @router.put("/update/{application_id}", response_model=ApplicationUpdateResponse)
 def update_application(
     application_id: int,
@@ -79,6 +75,50 @@ def update_application(
 
     application.status = form_data.status
 
+    db.commit()
+    db.refresh(application)
+
+    return {"message": "application updated", "data": application}
+
+
+@router.delete("/delete/{application_id}", status_code=204)
+def delete_applicaiton(
+    application_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    application = (
+        db.query(Application)
+        .filter(Application.id == application_id, Application.user_id == user.id)
+        .first()
+    )
+
+    if not application:
+        raise HTTPException(status_code=404, detail="not found")
+
+    db.delete(application)
+    db.commit()
+
+    return
+
+
+@router.patch("/update/{application_id}", response_model=ApplicationUpdateResponse)
+def patch_application(
+    application_id: int,
+    form_data:ApplicationPatch,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)):
+    
+    application = db.query(Application).filter(Application.id == application_id, Application.user_id == user.id).first()
+    if not application:
+        raise HTTPException(status_code=404, detail="not found")
+
+    changes = form_data.model_dump(exclude_unset=True)
+    if not changes:
+        raise HTTPException(status_code=400, detail="no fields to update")
+
+    for field, value in changes.items():
+        setattr(application, field, value)
 
     db.commit()
     db.refresh(application)
@@ -87,17 +127,3 @@ def update_application(
         "message" : "application updated",
         "data" : application
     }
-
-
-
-@router.delete("/delete/{application_id}", status_code=201)
-def delete_applicaiton(application_id: int, db:Session =Depends(get_db), user: User = Depends(get_current_user)):
-    application = db.query(Application).filter(Application.id == application_id, Application.user_id == user.id).first()
-
-    if not application:
-        raise HTTPException(status_code=404, detail="not found")
-
-    db.delete(application)
-    db.commit()
-
-    return []

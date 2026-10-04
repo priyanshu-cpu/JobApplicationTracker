@@ -64,6 +64,19 @@ class ApplicationOutUpdated(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
+
 class ApplicationUpdateResponse(BaseModel):
     message: str
     data : ApplicationOutUpdated
+
+
+
+class ApplicationPatch(BaseModel):
+    company: str | None = None
+    job_title: str | None = None
+    location: str | None = None
+    salary: int | None = None
+    status: ApplicationStatus | None = None
+    applied_at: datetime | None = None
+    notes: str | None = None
