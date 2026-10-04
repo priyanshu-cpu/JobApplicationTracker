@@ -21,11 +21,12 @@ def create_user(form_data: User, db: Session = Depends(get_db)):
             status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists"
         )
 
-    email = db.query(UserModel).filter(UserModel.email == form_data.email).first()
-    if email is not None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists"
-        )
+    if form_data.email is not None:
+        email = db.query(UserModel).filter(UserModel.email == form_data.email).first()
+        if email is not None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists"
+            )
 
     password_hash = generate_password_hash(form_data.password)
 
@@ -47,7 +48,7 @@ def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = D
     user = db.query(UserModel).filter(UserModel.username == form_data.username).first()
 
     if user is None or not verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(status_code=404, detail="Invalid credentials")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
 
     token = create_token({
         "sub" : str(user.id)
