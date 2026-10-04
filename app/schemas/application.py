@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field, ConfigDict, PlainSerializer
 from datetime import datetime, UTC
 from typing import Annotated
+from app.schemas.enums import ApplicationStatus
+
 
 
 FormattedDT = Annotated[
@@ -12,7 +14,7 @@ FormattedDT = Annotated[
 
 class ApplicationBase(BaseModel):
     company: str
-    status: str
+    status: ApplicationStatus = ApplicationStatus.APPLIED
     job_title: str
     location: str
     salary: int
@@ -25,7 +27,7 @@ class ApplicationOut(BaseModel):
     id: int
     user_id: int
     company: str
-    status: str
+    status: ApplicationStatus = ApplicationStatus.APPLIED
     job_title: str
     location: str
     salary: int
@@ -44,7 +46,7 @@ class ApplicationCreateResponse(BaseModel):
 
 
 class ApplicationUpdate(BaseModel):
-    status: str
+    status: ApplicationStatus = ApplicationStatus.APPLIED
     updated_at: datetime | None = None
 
 
@@ -53,7 +55,7 @@ class ApplicationOutUpdated(BaseModel):
     id: int
     user_id: int
     company: str
-    status: str
+    status: ApplicationStatus = ApplicationStatus.APPLIED
     job_title: str
     location: str
     salary: int
