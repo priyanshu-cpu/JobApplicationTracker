@@ -13,6 +13,7 @@ from app.schemas.application import (
     ApplicationPatch,
 )
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 router = APIRouter(prefix="/application")
 
@@ -105,11 +106,16 @@ def delete_applicaiton(
 @router.patch("/update/{application_id}", response_model=ApplicationUpdateResponse)
 def patch_application(
     application_id: int,
-    form_data:ApplicationPatch,
+    form_data: ApplicationPatch,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)):
-    
-    application = db.query(Application).filter(Application.id == application_id, Application.user_id == user.id).first()
+    user: User = Depends(get_current_user),
+):
+
+    application = (
+        db.query(Application)
+        .filter(Application.id == application_id, Application.user_id == user.id)
+        .first()
+    )
     if not application:
         raise HTTPException(status_code=404, detail="not found")
 
@@ -123,7 +129,27 @@ def patch_application(
     db.commit()
     db.refresh(application)
 
+    return {"message": "application updated", "data": application}
+
+
+@router.get("/dashboard")
+def dashboard(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    total = (
+        db.query(func.count(Application.id))
+        .filter(Application.user_id == user.id)
+        .scalar()
+    )
+
+    rows = (
+        db.query(Application.status, func.count(Application.id))
+        .filter(Application.user_id == user.id)
+        .group_by(Application.status)
+        .all()
+    )
+
+    by_status = {status: count for status, count in rows}
+
     return{
-        "message" : "application updated",
-        "data" : application
+        "total" : total,
+        "by_status" : by_status
     }

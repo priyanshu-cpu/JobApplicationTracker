@@ -76,7 +76,7 @@ class ApplicationPatch(BaseModel):
     company: str | None = None
     job_title: str | None = None
     location: str | None = None
-    salary: int | None = None
+    salary: int | None  = Field(default=None, gt=0)
     status: ApplicationStatus | None = None
     applied_at: datetime | None = None
     notes: str | None = None
