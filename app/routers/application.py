@@ -35,11 +35,18 @@ def create_application(
 
 @router.get("/get", response_model=list[ApplicationOut])
 def get_applications(
-    db: Session = Depends(get_db), user: User = Depends(get_current_user)
+    status:str |None = None,
+    db: Session = Depends(get_db), 
+    user: User = Depends(get_current_user)
 ):
-    applications = db.query(Application).filter(Application.user_id == user.id).all()
 
-    return applications
+    if status:
+        applications = db.query(Application).filter(Application.status == status, Application.user_id == user.id).all()
+        return applications
+    
+    else:
+        applications = db.query(Application).filter(Application.user_id == user.id).all()
+        return applications
 
 
 @router.get("/get/{application_id}", response_model=ApplicationOut)
